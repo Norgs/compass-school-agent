@@ -1,0 +1,12 @@
+services:
+  compass-dashboard:
+    image: nginx:alpine
+    container_name: compass-dashboard
+    restart: unless-stopped
+    ports:
+      - "8085:8085"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./index.html:/usr/share/nginx/html/index.html:ro
+      - /home/norgs/.hermes/data/compass_todo.json:/usr/share/nginx/html/compass_todo.json:ro
+      - ./certs:/etc/nginx/certs:ro

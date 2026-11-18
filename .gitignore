@@ -1,0 +1,10 @@
+certs/
+*.key
+*.crt
+google_token.json
+google_client_secret.json
+compass_todo.json
+data/
+__pycache__/
+*.pyc
+.env

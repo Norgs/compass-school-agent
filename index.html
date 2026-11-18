@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Compass School Dashboard</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            margin: 0;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+        h1 {
+            color: #0f172a;
+            margin-bottom: 0.2rem;
+        }
+        .subtitle {
+            color: #64748b;
+            margin-bottom: 2rem;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 6px;
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-left: 6px solid #cbd5e1;
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-radius: 4px;
+            margin-right: 0.5rem;
+        }
+        .cat-action { background: #fee2e2; color: #991b1b; border-left-color: #ef4444; }
+        .cat-payment { background: #fef3c7; color: #92400e; border-left-color: #f59e0b; }
+        .cat-excursion { background: #e0e7ff; color: #3730a3; border-left-color: #6366f1; }
+        .cat-info { background: #d1fae5; color: #065f46; border-left-color: #10b981; }
+        
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 0.4rem;
+        }
+        .meta {
+            font-size: 0.85rem;
+            color: #475569;
+            font-weight: 500;
+        }
+        .summary {
+            font-size: 0.95rem;
+            color: #334155;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏫 Compass School Dashboard</h1>
+        <div class="subtitle">Upcoming school notifications & action items</div>
+        <div id="items"></div>
+    </div>
+    <script>
+        async function loadData() {
+            try {
+                const res = await fetch('/data');
+                const items = await res.json();
+                const container = document.getElementById('items');
+                if (!items || items.length === 0) {
+                    container.innerHTML = '<p style="color: #64748b;">No school notifications found yet.</p>';
+                    return;
+                }
+                container.innerHTML = items.map(i => {
+                    let catClass = 'cat-info';
+                    if (i.category && i.category.includes('Action')) catClass = 'cat-action';
+                    else if (i.category && i.category.includes('Payment')) catClass = 'cat-payment';
+                    else if (i.category && i.category.includes('Excursion')) catClass = 'cat-excursion';
+
+                    return `
+                        <div class="card ${catClass}">
+                            <div class="header-row">
+                                <div>
+                                    <span class="badge ${catClass}">${i.category || 'Info'}</span>
+                                    <span class="meta">Child: <b>${i.child || 'Family'}</b></span>
+                                </div>
+                                <div class="meta">${i.date || ''}</div>
+                            </div>
+                            <div class="title">${i.title || ''}</div>
+                            <div class="summary">${i.summary || ''}</div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error("Failed to load items:", err);
+            }
+        }
+        loadData();
+        setInterval(loadData, 10000);
+    </script>
+</body>
+</html>
